@@ -48,7 +48,7 @@ Phillip</textarea>
         </div>
         <div>
           <label>Seed</label>
-          <input id="seed" type="text" />
+          <input id="seed" type="text" placeholder="(tom = automatisk seed)" />
         </div>
       </div>
 
@@ -181,7 +181,12 @@ Phillip</textarea>
   const terrEl = $('territories'), assignToPlayersEl = $('assignToPlayers');
   const resultEl = $('result'), errEl = $('err');
   const variantSel = $('variant'), newVariantNameEl = $('newVariantName');
-  seedEl.value = new Date().toISOString();
+
+  let seed = seedEl.value.trim();
+  if (!seed) {
+    seed = new Date().toISOString();
+    seedEl.value = seed; // viser brugeren hvad der blev brugt
+  }
 
   function refreshVariantSelect(selected){
     variantSel.innerHTML = '';
