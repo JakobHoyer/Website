@@ -182,12 +182,6 @@ Phillip</textarea>
   const resultEl = $('result'), errEl = $('err');
   const variantSel = $('variant'), newVariantNameEl = $('newVariantName');
 
-  let seed = seedEl.value.trim();
-  if (!seed) {
-    seed = new Date().toISOString();
-    seedEl.value = seed; // viser brugeren hvad der blev brugt
-  }
-
   function refreshVariantSelect(selected){
     variantSel.innerHTML = '';
     Object.keys(variants).forEach(name=>{
@@ -245,7 +239,13 @@ Phillip</textarea>
     errEl.textContent = '';
     const players = playersEl.value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
     const teamsCount = Math.max(1, parseInt(teamsEl.value||'1',10));
-    const seed = seedEl.value || 'seed';
+
+    let seed = seedEl.value.trim();
+    if (!seed) {
+      seed = new Date().toISOString();
+      seedEl.value = seed; // skriver det ind i feltet nu
+    }
+    
     const items = parseTextareaToItems(terrEl.value);
     const assignToPlayers = assignToPlayersEl.checked;
 
