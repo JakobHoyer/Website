@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Risk – Hold & Lande Fordeler</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;max-width:980px;margin:24px auto;padding:0 16px;line-height:1.4}
+    h1{margin:0 0 8px} .card{border:1px solid #ddd;border-radius:12px;padding:16px;margin:12px 0}
+    textarea,input,button,select{font:inherit} textarea,input,select{width:100%;box-sizing:border-box}
+    textarea{min-height:140px} .grid{display:grid;gap:12px}
+    @media (min-width:900px){.grid-2{grid-template-columns:1fr 1fr}}
+    .muted{color:#555;font-size:0.9rem} .row{display:flex;gap:8px;align-items:center}
+    .pill{background:#f2f2f2;border-radius:999px;padding:2px 8px;margin:2px;display:inline-block}
+    .small{font-size:.9rem} .danger{color:#b00020}
+  </style>
+</head>
+<body>
+  <h1>Risk – Hold & Lande Fordeler</h1>
+  <p class="muted">Tilføj spillere, vælg antal hold, tryk <b>Fordel</b>. Samme <i>seed</i> giver samme resultat.</p>
+
+  <div class="grid grid-2">
+    <section class="card">
+      <h2>Input</h2>
+      <label>Spillere (én per linje)</label>
+      <textarea id="players">Alice
+Bob
+Charlie
+Dana</textarea>
+
+      <div class="grid" style="grid-template-columns:1fr 1fr;">
+        <div>
+          <label>Antal hold</label>
+          <input id="teams" type="number" min="1" value="2" />
+        </div>
+        <div>
+          <label>Seed</label>
+          <input id="seed" type="text" value="default-seed" />
+        </div>
+      </div>
+
+      <label class="row" style="margin-top:8px;">
+        <input id="assignToPlayers" type="checkbox" />
+        <span class="small">Tildel lande til <b>spillere</b> (ellers får holdene en samlet liste)</span>
+      </label>
+
+      <details style="margin-top:8px;">
+        <summary>Avanceret: Lande-liste (ét navn per linje)</summary>
+        <textarea id="territories"></textarea>
+      </details>
+
+      <div class="row" style="margin-top:12px;">
+        <button id="go">Fordel</button>
+        <button id="copy">Kopiér resultat</button>
+        <span id="err" class="danger small"></span>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Resultat</h2>
+      <div id="result" class="small">—</div>
+    </section>
+  </div>
+
+<script>
+  // --- Default Risk-lande (klassisk, 42) ---
+  const DEFAULT_TERR = [
+    "Alaska","Northwest Territory","Greenland","Alberta","Ontario","Quebec","Western United States","Eastern United States","Central America",
+    "Venezuela","Peru","Brazil","Argentina",
+    "Iceland","Great Britain","Scandinavia","Northern Europe","Western Europe","Southern Europe","Ukraine",
+    "North Africa","Egypt","East Africa","Congo","South Africa","Madagascar",
+    "Ural","Siberia","Yakutsk","Kamchatka","Irkutsk","Mongolia","Japan","Afghanistan","China","Middle East","India","Siam",
+    "Indonesia","New Guinea","Western Australia","Eastern Australia"
+  ];
+  document.getElementById('territories').value = DEFAULT_TERR.join('\n');
+
+  // --- Seeded RNG (deterministisk shuffle) ---
+  function xmur3(str){let h=1779033703^str.length;for(let i=0;i<str.length;i++){h=Math.imul(h^str.charCodeAt(i),3432918353);h=(h<<13)|(h>>>19);}return function(){h=Math.imul(h^h>>>16,2246822507);h=Math.imul(h^h>>>13,3266489909);return (h^=h>>>16)>>>0;}}
+  function mulberry32(a){return function(){let t=a+=0x6d2b79f5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return ((t^t>>>14)>>>0)/4294967296;};}
+  function shuffle(arr, seedStr){
+    const seed = xmur3(seedStr)(); const rand = mulberry32(seed);
+    const a = arr.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(rand()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a;
+  }
+  function chunkRoundRobin(items, buckets){
+    const res = Array.from({length:buckets},()=>[]);
+    items.forEach((it,i)=>res[i%buckets].push(it));
+    return res;
+  }
+
+  const $ = id => document.getElementById(id);
+  const playersEl = $('players'), teamsEl = $('teams'), seedEl = $('seed');
+  const terrEl = $('territories'), assignToPlayersEl = $('assignToPlayers');
+  const resultEl = $('result'), errEl = $('err');
+
+  $('go').onclick = () => {
+    errEl.textContent = '';
+    const players = playersEl.value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+    const teamsCount = Math.max(1, parseInt(teamsEl.value||'1',10));
+    const seed = seedEl.value || 'seed';
+    const territories = terrEl.value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+    const assignToPlayers = assignToPlayersEl.checked;
+
+    if(players.length < teamsCount){ errEl.textContent = 'Antal hold må ikke være større end antal spillere.'; return; }
+
+    const shuffledPlayers = shuffle(players, seed+'::p');
+    const teams = chunkRoundRobin(shuffledPlayers, teamsCount);
+    const shuffledTerr = shuffle(territories, seed+'::t');
+
+    let html = '';
+    teams.forEach((team, i)=>{
+      html += `<div class="card"><b>Hold ${i+1}</b><br/>Spillere: ${team.map(p=>`<span class="pill">${p}</span>`).join(' ')}<br/>`;
+      if(assignToPlayers){
+        // fordel til individuelle spillere
+        const perPlayer = new Map(team.map(p=>[p,[]]));
+        shuffledTerr.forEach((t,idx)=>{ const p = shuffledPlayers[idx % shuffledPlayers.length]; if(perPlayer.has(p)) perPlayer.get(p).push(t); });
+        html += `<div style="margin-top:6px;">`;
+        team.forEach(p=>{
+          const list = (perPlayer.get(p)||[]).join(', ') || '—';
+          html += `<div><b>${p}:</b> ${list}</div>`;
+        });
+        html += `</div>`;
+      } else {
+        // fordel til hold
+        const teamBuckets = chunkRoundRobin(shuffledTerr, teamsCount);
+        const list = (teamBuckets[i]||[]).join(', ') || '—';
+        html += `<div style="margin-top:6px;"><b>Start-lande (hold):</b> ${list}</div>`;
+      }
+      html += `</div>`;
+    });
+    resultEl.innerHTML = html || '—';
+  };
+
+  $('copy').onclick = async () => {
+    const text = resultEl.textContent || '';
+    try { await navigator.clipboard.writeText(text); alert('Resultat kopieret.'); }
+    catch { alert('Kunne ikke kopiere – marker og kopier manuelt.'); }
+  };
+</script>
+</body>
+</html>
