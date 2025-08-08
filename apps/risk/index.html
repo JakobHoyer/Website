@@ -230,8 +230,7 @@ Dana</textarea>
   function formatTerritory(it){
     const css = toCssColor(it.color);
     const dot = css ? `<span class="dot" style="background:${css}"></span>` : `<span class="dot" style="background:#ddd"></span>`;
-    const label = it.color ? ` (${it.color})` : '';
-    return `${dot}<span>${it.name}${label}</span>`;
+    return `${dot}<span>${it.name}</span>`;
   }
 
   $('go').onclick = () => {
