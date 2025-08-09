@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="da">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mine webapps</title>
+<style>
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;max-width:980px;margin:24px auto;padding:0 16px}
+  header{display:flex;gap:16px;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #eee}
+  a{text-decoration:none;color:inherit}
+  .grid{display:grid;gap:16px;grid-template-columns:1fr}
+  @media (min-width:800px){.grid{grid-template-columns:repeat(3,1fr)}}
+  .card{border:1px solid #e6e6e6;border-radius:12px;padding:14px}
+  .muted{color:#666;font-size:.95rem}
+  .pill{display:inline-block;background:#f4f4f4;border:1px solid #e6e6e6;padding:2px 8px;border-radius:999px;font-size:.85rem}
+</style>
+<header>
+  <a href="/"><strong>Min side</strong></a>
+  <nav>
+    <a href="/">Forside</a> · <a href="/apps/">Apps</a>
+  </nav>
+</header>
+
+<h1>Apps</h1>
+<p class="muted">Samling af mine små værktøjer og lege-projekter.</p>
+
+<div id="apps" class="grid"></div>
+
+<script>
+(async () => {
+  // hent manifestet; redigér /apps/apps.json for at tilføje/ændre apps
+  let list = [];
+  try {
+    const res = await fetch('/apps/apps.json', { cache: 'no-store' });
+    if (res.ok) list = await res.json();
+  } catch {}
+
+  // fallback hvis manifest mangler
+  if (!Array.isArray(list) || list.length === 0) {
+    list = [
+      {
+        slug: "risk",
+        name: "Risk – Hold & Lande Fordeler",
+        description: "Fordel spillere i hold og tildel start-områder (Classic/Transformers m. farver).",
+        path: "/apps/risk/"
+      }
+    ];
+  }
+
+  const c = document.getElementById('apps');
+  c.innerHTML = list.map(app => `
+    <a class="card" href="${app.path}">
+      <div class="pill">${app.slug}</div>
+      <h3 style="margin:8px 0 4px 0;">${app.name}</h3>
+      <p class="muted">${app.description || ""}</p>
+    </a>
+  `).join('');
+})();
+</script>
+</html>
