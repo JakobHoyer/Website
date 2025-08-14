@@ -3,99 +3,114 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- Icon -->
+  <!-- Icon -->
   <link rel="icon" href="/assets/logo.svg" type="image/svg+xml">
   <link rel="alternate icon" href="/assets/logo.ico" sizes="any">
   <link rel="apple-touch-icon" href="/assets/logo.png">
-  
-  <!-- (valgfrit) Sociale previews -->
+
+  <!-- Sociale previews (valgfrit) -->
   <meta property="og:title" content="Min side">
   <meta property="og:description" content="Mine projekter og apps">
   <meta property="og:image" content="/assets/site-512.png">
   <meta name="twitter:card" content="summary_large_image">
-  
+
   <title>Risk – Hold & Lande Fordeler</title>
   <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;max-width:980px;margin:24px auto;padding:0 16px;line-height:1.4}
-    h1{margin:0 0 8px} .card{border:1px solid #ddd;border-radius:12px;padding:16px;margin:12px 0}
-    textarea,input,button,select{font:inherit} textarea,input,select{width:100%;box-sizing:border-box}
-    textarea{min-height:140px} .grid{display:grid;gap:12px}
+    :root { --max: 980px; }
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:24px auto;line-height:1.4}
+    .container{max-width:var(--max);padding:0 16px;margin:0 auto}
+
+    /* Header */
+    header{display:flex;gap:16px;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #eee;margin-bottom:16px}
+    header a{text-decoration:none;color:inherit}
+
+    /* App UI */
+    h1{margin:0 0 8px}
+    .card{border:1px solid #ddd;border-radius:12px;padding:16px;margin:12px 0}
+    textarea,input,button,select{font:inherit}
+    textarea,input,select{width:100%;box-sizing:border-box}
+    textarea{min-height:140px}
+    .grid{display:grid;gap:12px}
     @media (min-width:900px){.grid-2{grid-template-columns:1fr 1fr}}
-    .muted{color:#555;font-size:0.9rem} .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .muted{color:#555;font-size:0.9rem}
+    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
     .pill{border-radius:999px;padding:2px 8px;margin:2px;display:inline-flex;align-items:center;gap:6px;border:1px solid #e5e5e5;background:#f8f8f8}
     .dot{width:10px;height:10px;border-radius:50%;display:inline-block;border:1px solid #0001}
-    .small{font-size:.9rem} .danger{color:#b00020}
+    .small{font-size:.9rem}
+    .danger{color:#b00020}
     .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
   </style>
 </head>
-
-  
 <body>
-  <header>
-  <a href="/"><strong>Min side</strong></a>
-  <nav>
-    <a href="/">Forside</a> · <a href="/apps/">Apps</a> · <a href="/music/">Musik</a>
-  </nav>
-</header>
-  <h1>Risk – Hold & Lande Fordeler</h1>
-  <p class="muted">Vælg variant (Classic/Transformers/…) – samme <i>seed</i> giver samme resultat. Skriv evt. <span class="mono">Navn (farve)</span> pr. linje.</p>
+  <div class="container">
+    <!-- HEADER SKAL LIGGE INDEN I BODY -->
+    <header>
+      <a href="/"><strong>Min side</strong></a>
+      <nav>
+        <a href="/">Forside</a> · <a href="/apps/">Apps</a> · <a href="/music/">Musik</a>
+      </nav>
+    </header>
 
-  <div class="grid grid-2">
-    <section class="card">
-      <h2>Input</h2>
+    <h1>Risk – Hold & Lande Fordeler</h1>
+    <p class="muted">Vælg variant (Classic/Transformers/…) – samme <i>seed</i> giver samme resultat. Skriv evt. <span class="mono">Navn (farve)</span> pr. linje.</p>
 
-      <label>Variant</label>
-      <div class="row">
-        <select id="variant"></select>
-        <input id="newVariantName" placeholder="Ny variant-navn (valgfrit)" />
-        <button id="createVariant">Opret tom variant</button>
-        <button id="deleteVariant" title="Slet den valgte variant">Slet variant</button>
-      </div>
+    <div class="grid grid-2">
+      <section class="card">
+        <h2>Input</h2>
 
-      <label style="margin-top:8px;">Spillere (én per linje)</label>
-      <textarea id="players">Hullet
+        <label>Variant</label>
+        <div class="row">
+          <select id="variant"></select>
+          <input id="newVariantName" placeholder="Ny variant-navn (valgfrit)" />
+          <button id="createVariant">Opret tom variant</button>
+          <button id="deleteVariant" title="Slet den valgte variant">Slet variant</button>
+        </div>
+
+        <label style="margin-top:8px;">Spillere (én per linje)</label>
+        <textarea id="players">Hullet
 Høyer
 Klinke
 Mestrøv
 Myken
 Phillip</textarea>
 
-      <div class="grid" style="grid-template-columns:1fr 1fr;">
-        <div>
-          <label>Antal hold</label>
-          <input id="teams" type="number" min="1" value="2" />
+        <div class="grid" style="grid-template-columns:1fr 1fr;">
+          <div>
+            <label>Antal hold</label>
+            <input id="teams" type="number" min="1" value="2" />
+          </div>
+          <div>
+            <label>Seed</label>
+            <input id="seed" type="text" placeholder="(tom = automatisk seed)" />
+          </div>
         </div>
-        <div>
-          <label>Seed</label>
-          <input id="seed" type="text" placeholder="(tom = automatisk seed)" />
+
+        <label class="row" style="margin-top:8px;">
+          <input id="assignToPlayers" type="checkbox" />
+          <span class="small">Tildel lande til <b>spillere</b> (ellers får holdene en samlet liste)</span>
+        </label>
+
+        <details style="margin-top:8px;" open>
+          <summary>Lande-liste for varianten (ét navn pr. linje, evt. <span class="mono">(farve)</span>)</summary>
+          <textarea id="territories"></textarea>
+          <div class="row" style="margin-top:8px;">
+            <button id="saveVariantList">Gem til varianten</button>
+            <span class="small muted">Gemmes i din browser (localStorage). Format: <span class="mono">Navn</span> eller <span class="mono">Navn (rød)</span>.</span>
+          </div>
+        </details>
+
+        <div class="row" style="margin-top:12px;">
+          <button id="go">Fordel</button>
+          <button id="copy">Kopiér resultat</button>
+          <span id="err" class="danger small"></span>
         </div>
-      </div>
+      </section>
 
-      <label class="row" style="margin-top:8px;">
-        <input id="assignToPlayers" type="checkbox" />
-        <span class="small">Tildel lande til <b>spillere</b> (ellers får holdene en samlet liste)</span>
-      </label>
-
-      <details style="margin-top:8px;" open>
-        <summary>Lande-liste for varianten (ét navn pr. linje, evt. <span class="mono">(farve)</span>)</summary>
-        <textarea id="territories"></textarea>
-        <div class="row" style="margin-top:8px;">
-          <button id="saveVariantList">Gem til varianten</button>
-          <span class="small muted">Gemmes i din browser (localStorage). Format: <span class="mono">Navn</span> eller <span class="mono">Navn (rød)</span>.</span>
-        </div>
-      </details>
-
-      <div class="row" style="margin-top:12px;">
-        <button id="go">Fordel</button>
-        <button id="copy">Kopiér resultat</button>
-        <span id="err" class="danger small"></span>
-      </div>
-    </section>
-
-    <section class="card">
-      <h2>Resultat</h2>
-      <div id="result" class="small">—</div>
-    </section>
+      <section class="card">
+        <h2>Resultat</h2>
+        <div id="result" class="small">—</div>
+      </section>
+    </div>
   </div>
 
 <script>
@@ -108,66 +123,19 @@ Phillip</textarea>
     "lilla":"purple",
     "orange":"orange",
   };
-  function toCssColor(label){ if(!label) return null; const k = label.trim().toLowerCase(); return COLOR_MAP[k] || null; }
+  const toCssColor = (label) => label ? (COLOR_MAP[label.trim().toLowerCase()] || null) : null;
 
-// ---------- Classic Risk på dansk (hjælpe-farver pr. kontinent) ----------
-const CLASSIC = {
-  // Nordamerika (blå)
-  "Alaska":"blå",
-  "Nordvestterritoriet":"blå",
-  "Grønland":"blå",
-  "Alberta":"blå",
-  "Ontario":"blå",
-  "Quebec":"blå",
-  "Vestlige USA":"blå",
-  "Østlige USA":"blå",
-  "Mellemamerika":"blå",
+  // ---------- Classic Risk på dansk (hjælpe-farver pr. kontinent) ----------
+  const CLASSIC = {
+    "Alaska":"blå","Nordvestterritoriet":"blå","Grønland":"blå","Alberta":"blå","Ontario":"blå","Quebec":"blå","Vestlige USA":"blå","Østlige USA":"blå","Mellemamerika":"blå",
+    "Venezuela":"orange","Peru":"orange","Brasilien":"orange","Argentina":"orange",
+    "Island":"grøn","Storbritannien":"grøn","Skandinavien":"grøn","Nordeuropa":"grøn","Vesteuropa":"grøn","Sydeuropa":"grøn","Ukraine":"grøn",
+    "Nordafrika":"gul","Egypten":"gul","Østafrika":"gul","Kongo":"gul","Sydafrika":"gul","Madagaskar":"gul",
+    "Ural":"rød","Sibirien":"rød","Jakutsk":"rød","Kamtsjatka":"rød","Irkutsk":"rød","Mongoliet":"rød","Japan":"rød","Afghanistan":"rød","Kina":"rød","Mellemøsten":"rød","Indien":"rød","Siam":"rød",
+    "Indonesien":"lilla","Ny Guinea":"lilla","Vestaustralien":"lilla","Østaustralien":"lilla"
+  };
 
-  // Sydamerika (orange)
-  "Venezuela":"orange",
-  "Peru":"orange",
-  "Brasilien":"orange",
-  "Argentina":"orange",
-
-  // Europa (grøn)
-  "Island":"grøn",
-  "Storbritannien":"grøn",
-  "Skandinavien":"grøn",
-  "Nordeuropa":"grøn",
-  "Vesteuropa":"grøn",
-  "Sydeuropa":"grøn",
-  "Ukraine":"grøn",
-
-  // Afrika (gul)
-  "Nordafrika":"gul",
-  "Egypten":"gul",
-  "Østafrika":"gul",
-  "Kongo":"gul",
-  "Sydafrika":"gul",
-  "Madagaskar":"gul",
-
-  // Asien (rød)
-  "Ural":"rød",
-  "Sibirien":"rød",
-  "Jakutsk":"rød",
-  "Kamtsjatka":"rød",
-  "Irkutsk":"rød",
-  "Mongoliet":"rød",
-  "Japan":"rød",
-  "Afghanistan":"rød",
-  "Kina":"rød",
-  "Mellemøsten":"rød",
-  "Indien":"rød",
-  "Siam":"rød",
-
-  // Australien (lilla)
-  "Indonesien":"lilla",
-  "Ny Guinea":"lilla",
-  "Vestaustralien":"lilla",
-  "Østaustralien":"lilla"
-};
-
-  // ---------- Transformers Risk fra dig ----------
+  // ---------- Transformers Risk ----------
   const TRANSFORMERS_LIST = [
     "Autobase (rødt)","Tyrest (rødt)","Decagon (rødt)","Tagon-Højderne (rødt)","De Neutrale Territorier (rødt)","Plasma-energikammere (rødt)",
     "Betaplatform i Kredsløb (blå)","Vos (blå)","Affyringsrampe (blå)","Hexima-staten (blå)","Arenaen (blå)","Rad-zonen (blå)","Tarn (blå)","Stella Galleries (blå)","Praetorus-Lossebroen (blå)",
@@ -177,47 +145,39 @@ const CLASSIC = {
     "Tritorus (orange)","Sonic-floddalen (orange)","Hydrax-højsletten (orange)","Alpha-månen (orange)"
   ];
 
-  // ---------- Variant storage (localStorage) ----------
-  // Intern format: { [variantName]: Array<{name:string,color?:string}> }
+  // ---------- Variant storage ----------
   const LS_KEY = "risk_variants_v3_dk";
 
   function parseLine(line){
-    // "Navn (farve)" eller bare "Navn"
     const m = line.match(/^(.+?)(?:\s*\((.+?)\)\s*)?$/);
     if(!m) return null;
     const name = m[1].trim();
     const color = m[2]?.trim() || null;
     return name ? { name, color } : null;
   }
-
-  function parseTextareaToItems(text){
-    return text.split(/\r?\n/).map(s=>s.trim()).filter(Boolean).map(parseLine).filter(Boolean);
-  }
-
-  function itemsToTextarea(items){
-    return items.map(it => it.color ? `${it.name} (${it.color})` : it.name).join("\n");
-  }
+  const parseTextareaToItems = (text) =>
+    text.split(/\r?\n/).map(s=>s.trim()).filter(Boolean).map(parseLine).filter(Boolean);
+  const itemsToTextarea = (items) =>
+    items.map(it => it.color ? `${it.name} (${it.color})` : it.name).join("\n");
 
   function loadVariants(){
     const raw = localStorage.getItem(LS_KEY);
     if(raw){
-      try {
+      try{
         const obj = JSON.parse(raw);
-        // Backcompat: strings -> objects
         for(const k of Object.keys(obj)){
           obj[k] = (obj[k] || []).map(v => typeof v === "string" ? parseLine(v) : v).filter(Boolean);
         }
         return obj;
-      } catch {}
+      }catch{}
     }
-    // Førstegangsload: læg Classic + Transformers ind
     const classicItems = Object.keys(CLASSIC).map(name => ({ name, color: CLASSIC[name] }));
     const transformersItems = TRANSFORMERS_LIST.map(parseLine).filter(Boolean);
     const base = { "Classic (42)": classicItems, "Transformers": transformersItems };
     localStorage.setItem(LS_KEY, JSON.stringify(base));
     return base;
   }
-  function saveVariants(obj){ localStorage.setItem(LS_KEY, JSON.stringify(obj)); }
+  const saveVariants = (obj) => localStorage.setItem(LS_KEY, JSON.stringify(obj));
 
   let variants = loadVariants();
 
@@ -228,11 +188,11 @@ const CLASSIC = {
     const seed = xmur3(seedStr)(); const rand = mulberry32(seed);
     const a = arr.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(rand()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a;
   }
-  function chunkRoundRobin(items, buckets){
+  const chunkRoundRobin = (items, buckets) => {
     const res = Array.from({length:buckets},()=>[]);
     items.forEach((it,i)=>res[i%buckets].push(it));
     return res;
-  }
+  };
 
   // ---------- DOM ----------
   const $ = id => document.getElementById(id);
@@ -300,11 +260,8 @@ const CLASSIC = {
     const teamsCount = Math.max(1, parseInt(teamsEl.value||'1',10));
 
     let seed = seedEl.value.trim();
-    if (!seed) {
-      seed = new Date().toISOString();
-      seedEl.value = seed; // skriver det ind i feltet nu
-    }
-    
+    if (!seed) { seed = new Date().toISOString(); seedEl.value = seed; }
+
     const items = parseTextareaToItems(terrEl.value);
     const assignToPlayers = assignToPlayersEl.checked;
 
